@@ -1,0 +1,26 @@
+Todo:
+
+[ ] Merge behaviour (specs?)
+[ ] Block updates if there are uncommited changes (proceed with care, requires
+    extensive testing).
+
+> [ ] Separate logic of revisions/migrations (? why: current model works
+    well enough)
+    
+[ ] Implement include-data command, adding data info to migration.
+[ ] Non-invasive roll-back and roll-forward in order to support migration
+    injections.
+* [ ] Ignore command: ignore some tables.
+    Syntax: ignore [-r] table
+
+Done:
+
+[x] Support for shortcuts (ci for commit, up for update etc.)
+[x] Closer integration with Mercurial. Option to select VCS on init.
+    Auto add .conf files on commit.
+[x] Implement status command (A, R, M, M+, M-)
+[x] Implement tip command (displays info for current revision)
+[x] Implement log command (displays detailed revision info)
+[x] We should save history of current branch, in order to track actual 
+    migration files.
+
