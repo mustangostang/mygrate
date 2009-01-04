@@ -3,9 +3,12 @@
 import cmds.init
 import db.dump
 import sys
+import os.path
+import repo
+
 
 REV_PATH = ".mygrate/store/%s.sql"
-
+REV_PATH = os.path.join (repo.repopath(), REV_PATH)
 
 def set_current(number):
   revisions = cmds.init.revisions()

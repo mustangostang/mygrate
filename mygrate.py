@@ -44,7 +44,7 @@ if __name__ == '__main__':
       [command] = Aliases[command]
     if Commands[command]:
       Commands[command](args)
-  except (ValueError, IndexError, KeyError):
+  except IndexError:
     print """Unknown command: %s""" % command
     print """Mygrate - MySQL Sexy Migration Tool\n"""
     print """Available commands are:\n"""

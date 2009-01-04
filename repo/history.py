@@ -5,8 +5,11 @@ import db.dump
 import sys
 import cPickle
 import repo.migration
+import os.path
+import repo
 
 HISTORY_PATH = ".mygrate/store/history"
+HISTORY_PATH = os.path.join (repo.repopath(), HISTORY_PATH)
 
 def load():
   return History()  
