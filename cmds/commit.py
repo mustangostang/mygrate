@@ -14,8 +14,9 @@ def run (args):
   try:
     message = args[0]
   except IndexError:
-    print """Correct usage: mygrate commit "message to commit" """
-    sys.exit()
+    print """== No message specified. Using the following message to commit: ==\n"""
+    message = auto_commit_message()
+    print message
   print "Commiting current changes."
   
   src = Database().parseString(repo.revision.latest())
@@ -41,3 +42,21 @@ def add_to_hg (number):
   output = "hg add %s" % (Migration.filename)
   output = Popen(output, shell=True, stdout=PIPE).stdout.read()
   print output
+  
+def auto_commit_message():
+  Diff = Database().parseString(db.dump.dump()) - Database().parseString(repo.revision.latest())
+  CommitMsg = []
+  for tbl in Diff.TablesAdded:
+    CommitMsg.append ("Added table `%s`" % tbl.name)
+  for tbl in Diff.TablesDropped:
+    CommitMsg.append ("Dropped table `%s`" % tbl.name)
+  for (tbl, dstTable) in Diff.TablesModified:
+    CommitMsg.append ("Modified table `%s`:" % tbl.name)
+    diffSt = dstTable - tbl
+    for (field, prev) in diffSt.FieldsAdded:
+      CommitMsg.append ("  + added `%s`" % field.name)
+    for field in diffSt.FieldsDropped:
+      CommitMsg.append ("  - dropped `%s`" % field.name)
+    for field in diffSt.FieldsModified:
+      CommitMsg.append ("    modified `%s` to %s%s" % (field.name, field.type, "(%s)" % field.options if field.options else ""))
+  return "\n".join (CommitMsg)
