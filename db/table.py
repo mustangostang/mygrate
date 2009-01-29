@@ -29,11 +29,11 @@ class Database:
       print "Can't open file %s." % file
       sys.exit()
     return self.parseLines (Lines)
-    
+
   def parseString (self, string):
     """Parses a file and returns an instance of Database."""
     return self.parseLines(string.splitlines(True))
-    
+
   def parseLines (self, Lines):
     Lines = [line for line in Lines if not line.startswith("SET ")]
     TableData = []
@@ -45,22 +45,22 @@ class Database:
         table = []
     Tables = [Table(table) for table in TableData]
     self.tables = Tables
-    
+
     self.__tableNames = [table.name for table in self.tables]
     return self
-  
+
   def table (self, name):
     if not name in self.__tableNames:
       return None
     return self.tables[self.__tableNames.index(name)]
-  
+
   def tableExists (self, Table):
     if Table.name in self.__tableNames:
       return True
     return False
-    
+
     return self
-    
+
   def __str__ (self):
     return "\n\n".join ([str(table) for table in self.tables])
 
@@ -74,7 +74,7 @@ class Table:
     self.primaryIndex = ''
     self.Indexes = []
     self.Options = { }
-    
+
     self.__fieldNames = []
     self.__indexNames = []
 
@@ -90,10 +90,10 @@ class Table:
         self.Fields.append (Field(fieldOrIndex))
         continue
       self.Indexes.append (Index(fieldOrIndex))
-      
+
     self.__fieldNames = [field.name for field in self.Fields]
     self.__indexNames = [index.name for index in self.Indexes]
-  
+
   def __sub__ (self, other):
     return alter.TableDiff().compare(other, self)
 
@@ -104,7 +104,7 @@ class Table:
     if len(str(self - other)) > 0:
       return True
     return False
-    
+
   def __gt__ (self, other):
     if len (self.Fields) > len (other.Fields):
       return True
@@ -112,12 +112,12 @@ class Table:
   def __lt__ (self, other):
     if len (self.Fields) < len (other.Fields):
       return True
-  
+
   def field (self, name):
     if not name in self.__fieldNames:
       return None
     return self.Fields[self.__fieldNames.index(name)]
-  
+
   def fieldExists (self, Field):
     if Field.name in self.__fieldNames:
       return True
@@ -127,15 +127,15 @@ class Table:
     if not name in self.__indexNames:
       return None
     return self.Indexes[self.__indexNames.index(name)]
-  
+
   def indexExists (self, Index):
     if Index.name in self.__indexNames:
       return True
     return False
-      
+
   def __str__ (self):
     return self.createSQL()
-      
+
   def createSQL (self):
     return """CREATE TABLE `%s` (
 %s
@@ -150,7 +150,7 @@ class Table:
 
   def removeSQL (self):
     return """DROP TABLE `%s`;""" % (self.name)
-  
+
 class Field:
   def __init__ (self, data):
     self.name = ''
@@ -161,8 +161,14 @@ class Field:
     self.default = ''
     m = re.search ("^`(.+?)`", data); self.name = m.group(1)
     data = data[len ("`%s` " % self.name):]
-    m = re.search ("^(.+?)(\((.+?)\))?\s(.+)$", data); self.type = m.group(1); self.options = m.group(3)
-    data = m.group(4)
+    m = re.search ("^(.+?)(\((.+?)\))?\s(.+)$", data)
+    if m:
+      self.type = m.group(1); self.options = m.group(3)
+      data = m.group(4)
+    else:
+      m = re.search ("^([A-z]+)(\s*)(.*)$", data)
+      self.type = m.group (1); data = m.group(3)
+
     if data.startswith ("NOT NULL"):
       self.null = False
     m = re.search ("default '(.+?)'", data);
@@ -175,7 +181,7 @@ class Field:
     m = re.search ("auto_increment", data);
     if m:
       self.auto_increment = True
-    
+
   def __ne__ (self, other):
     if self.name != other.name:
       return True
@@ -190,10 +196,10 @@ class Field:
     if self.default != other.default:
       return True
     return False
-    
+
   def __eq__ (self, other):
     return not (self != other)
-    
+
   def __str__ (self):
     return "`%s` %s%s%s%s%s" % (self.name, self.type,
                                 "(%s)" % self.options if self.options else "",
@@ -201,7 +207,7 @@ class Field:
                                 " default %s" % self.default if self.default else "",
                                 ' auto_increment' if self.auto_increment else ""
                                 )
-  
+
 class Index:
   def __init__ (self, data):
     self.type = ''
@@ -211,7 +217,7 @@ class Index:
     self.type = m.group(1)
     self.name = m.group(2)
     self.fields = m.group(3)
-    
+
   def __ne__ (self, other):
     if self.name != other.name:
       return True
@@ -220,16 +226,16 @@ class Index:
     if self.fields != other.fields:
       return True
     return False
-    
+
   def __eq__ (self, other):
     return not (self != other)
-  
+
   def __str__ (self):
     return "%s `%s` (%s)" % (self.type, self.name, self.fields)
-    
+
   def forAlteration(self):
     TypeMap = { 'KEY': 'INDEX', 'UNIQUE KEY': 'UNIQUE', 'FULLTEXT KEY': 'FULLTEXT' }
     return "%s `%s` (%s)" % (TypeMap[self.type], self.name, self.fields)
-  
+
 if __name__ == '__main__':
   parsefile ('../source.sql')
