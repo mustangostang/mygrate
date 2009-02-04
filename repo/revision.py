@@ -42,5 +42,9 @@ def by_number(rev_no):
 def save():
   """Increments revision number and saves current"""
   current = latest_number() + 1
-  open (REV_PATH % current, 'w').write(db.dump.dump())
+  save_to_file (current)
   set_current (current)
+
+def save_to_file (rev_no):
+  """Saves current dump to revision SQL file (rev_no)"""
+  open (REV_PATH % rev_no, 'w').write(db.dump.dump())
