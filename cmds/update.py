@@ -7,7 +7,7 @@ import repo.revision
 import repo.migration
 import cmds.init
 
-def run (args):
+def run (args = []):
   """Updates database to given revision"""
   cmds.init.require_init()
   try:

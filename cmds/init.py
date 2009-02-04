@@ -47,8 +47,11 @@ def run (args):
     os.makedirs (".mygrate/store")
   except:
     pass
+  migration_dir_exists = False
   dir_default = "migrations"
   dir = dir_default
+  if os.path.isdir(dir):
+    migration_dir_exists = True
   if not os.path.isdir (dir_default):
     dir = raw_input ("The directory to store the migration files (default: %s): " % dir_default)
     if not dir:
@@ -82,3 +85,7 @@ def run (args):
   revisions.write()
   
   print """Migration repos initialized successfully."""
+
+  if migration_dir_exists:
+    import cmds.update
+    cmds.update.run()
