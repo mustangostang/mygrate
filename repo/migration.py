@@ -14,7 +14,7 @@ def add(number, sqlUp, sqlDown, message):
   PATH = MIGRATION_DIR + "/%s-%s.conf"
 
   numberWithZeros = str(number).zfill(3)
-  messageAlias = message.lower().replace (' ', '_').replace ('.', '').replace ('`', '').replace ("\n", '')[0:16]
+  messageAlias = message.lower().replace (' ', '_').replace ('.', '').replace ('`', '').replace ("\n", '').replace(':', '')[0:16]
   revision = ConfigObj (PATH % (numberWithZeros, messageAlias))
   revision["number"] = number
   revision["message"] = message
