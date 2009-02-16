@@ -1,3 +1,4 @@
+import os.path
 #!/usr/bin/env python
 
 import os
@@ -13,7 +14,7 @@ def repopath():
   if REPO is not None:
     return REPO
   curdir = os.path.abspath(os.path.curdir)
-  while curdir != "/":
+  while os.path.splitdrive(curdir)[1] != os.sep:
     try:
       repopath = os.path.join (curdir, cmds.init.PATH_CONF_MAIN)
       config = ConfigObj(repopath)
