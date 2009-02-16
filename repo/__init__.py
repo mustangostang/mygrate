@@ -29,6 +29,21 @@ def repopath():
   REPO = "."
   return "."
 
+def has_outstanding_changes():
+  return outstanding_changes() != ''
+
+def outstanding_changes(undo = False):
+  """Return diff between current database and current revision state."""
+  from db.table import Database
+  import repo.revision
+  import db
+  src = Database().parseString(repo.revision.latest())
+  dest = Database().parseString(db.dump.dump())
+  if not undo:
+    return str(dest - src)
+  return str(src - dest)
+
+
 def not_at_tip():
   """Returns True if repo is not currently at tip migration"""
   import repo.migration

@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-import db.dump
-from db.table import Database
 import sys
+import repo
 import repo.revision
 import repo.migration
 import cmds.init
+import db.dump
 
 def run (args = []):
   """Updates database to given revision"""
@@ -21,6 +21,12 @@ def run (args = []):
     return
 
   print """Updating to migration #%s.""" % revision
+
+  outstanding_changes = repo.has_outstanding_changes()
+  if outstanding_changes:
+    apply_after_update = repo.outstanding_changes()
+    print """Undoing outstanding changes."""
+    db.dump.load (repo.outstanding_changes(undo = True))
   
   if revision < current:
     # Downgrading
@@ -31,9 +37,8 @@ def run (args = []):
       current = current - 1
       repo.revision.set_current (current)
     print """Updated to revision #%s.""" % current
-    return
     
-  if revision > current:
+  else:
     # Upgrading
     while current < revision:
       current = current + 1
@@ -43,3 +48,7 @@ def run (args = []):
       repo.revision.save_to_file(current)
       repo.revision.set_current (current)
     print """Updated to revision #%s.""" % current
+
+  if outstanding_changes:
+    print """Reapplying outstanding changes."""
+    db.dump.load (apply_after_update)
