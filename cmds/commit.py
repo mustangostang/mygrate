@@ -3,6 +3,7 @@
 import db.dump
 from db.table import Database
 import sys
+import repo
 import repo.revision
 import repo.migration
 import cmds.init
@@ -11,6 +12,7 @@ from subprocess import Popen, PIPE
 def run (args):
   """Commits current repository changes to file"""
   cmds.init.require_init()
+  repo.allow_if_at_tip()
   try:
     message = args[0]
   except IndexError:
