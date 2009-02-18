@@ -52,10 +52,11 @@ def not_at_tip():
   current = repo.revision.current()
   return (current == latest, latest, current)
 
-def allow_if_at_tip():
+def allow_if_at_tip(die = True):
   """Returns a warning message and exists if repo is not at tip"""
   (at_tip, tip, current) = not_at_tip()
   if (at_tip): return True
   print """Repository is currently not at tip (currently at #%s, tip is #%s).
 Run `mygrate up`.""" % (current, tip)
-  sys.exit()
+  if die:
+    sys.exit()
