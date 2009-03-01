@@ -14,7 +14,7 @@ def restore_point():
   password = config["db_pass"]
   db       = config["db_db"]
 
-  output, errors = mysql_command ("-u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+  output, errors = mysql_command ("-u%s %s%s --add-drop-table --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
   return output
 
 def dump():

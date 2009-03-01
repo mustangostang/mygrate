@@ -5,6 +5,7 @@ from repo.configobj import ConfigObj
 import db.dump
 import os
 import repo
+from db import SQLLoadError, MigrationFailedError
 
 def add(number, sqlUp, sqlDown, message):
   """Adds a new migration."""
@@ -54,6 +55,7 @@ class Migration:
     self.sqlDown = ''
     self.filename = ''
     self.author = ''
+    self.state_to_rollback = db.dump.restore_point()
     
     numberWithZeros = str(number).zfill(3)
     filename = [file for file in os.listdir (MIGRATION_DIR) if file.startswith(numberWithZeros)][0]
@@ -77,6 +79,27 @@ class Migration:
       update (config)
     
   def up (self):
-    db.dump.load (self.sqlUp)
+    """Executes the up action for migration"""
+    try:
+      db.dump.load (self.sqlUp)
+    except SQLLoadError, error:
+      self.rollback(verbose = True, message = error)
+
   def down (self):
-    db.dump.load (self.sqlDown)
+    """Executes the down action for migration"""
+    try:
+      db.dump.load (self.sqlDown)
+    except SQLLoadError, error:
+      self.rollback(verbose = True, message = error)
+
+  def rollback (self, verbose = True, message = ''):
+    """Rolls back changes to latest state"""
+    if verbose:
+      print "---"
+      print """Migration #%s has failed.""" % (self.number),
+      if message:
+        print message
+      print """Check your migration file (%s) and correct it.""" % self.filename
+      print "Rolling back failed migration..."
+    db.dump.load (self.state_to_rollback)
+    raise MigrationFailedError(migration_number = self.number)

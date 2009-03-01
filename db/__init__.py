@@ -9,3 +9,10 @@ class SQLLoadError (Exception):
     return """MySQL encountered the following error:
 
 %s""" % self.errors
+
+class MigrationFailedError (Exception):
+  """Raised when migration has failed"""
+  def __init__ (self, migration_number):
+    self.migration_number = migration_number
+  def __str__ (self):
+    return """Migration #%s failed.""" % self.migration_number
