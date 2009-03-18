@@ -6,6 +6,7 @@ import db.dump
 import os
 import repo
 from db import SQLLoadError, MigrationFailedError
+from subprocess import Popen, PIPE
 
 def add(number, sqlUp, sqlDown, message):
   """Adds a new migration."""
@@ -91,6 +92,24 @@ class Migration:
       db.dump.load (self.sqlDown)
     except SQLLoadError, error:
       self.rollback(verbose = True, message = error)
+
+  def delete(self):
+    """Deletes current migration file"""
+    os.unlink(self.filename)
+
+  def add_to_hg (self):
+    """Add to Mercurial version control."""
+    print """Adding migration to Mercurial..."""
+    output = "hg add %s" % (self.filename)
+    output = Popen(output, shell=True, stdout=PIPE).stdout.read()
+    print output
+
+  def remove_from_hg (self):
+    """Remove from Mercurial version control."""
+    print """Removing migration from Mercurial..."""
+    output = "hg remove %s" % (self.filename)
+    output = Popen(output, shell=True, stdout=PIPE).stdout.read()
+    print output
 
   def rollback (self, verbose = True, message = ''):
     """Rolls back changes to latest state"""

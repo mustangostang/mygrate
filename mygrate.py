@@ -17,6 +17,7 @@ Commands = {
   'status': cmds.status.run,
   'log': cmds.log.run,
   'tip': cmds.tip.run,
+  'rollback': cmds.rollback.run,
 }
 
 Aliases = { }

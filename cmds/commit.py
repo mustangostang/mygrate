@@ -7,7 +7,6 @@ import repo
 import repo.revision
 import repo.migration
 import cmds.init
-from subprocess import Popen, PIPE
 
 def run (args):
   """Commits current repository changes to file"""
@@ -40,10 +39,7 @@ def run (args):
   
 def add_to_hg (number):
   Migration = repo.migration.Migration (number)
-  print """Adding migration to Mercurial..."""
-  output = "hg add %s" % (Migration.filename)
-  output = Popen(output, shell=True, stdout=PIPE).stdout.read()
-  print output
+  Migration.add_to_hg()
   
 def auto_commit_message():
   Diff = Database().parseString(db.dump.dump()) - Database().parseString(repo.revision.latest())
