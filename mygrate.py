@@ -22,7 +22,7 @@ Commands = {
 
 Aliases = { }
 
-for cmd in Commands.keys():
+for cmd in cmds.__all__:
   for alias in [cmd[:i+1] for i in range(len(cmd) - 1)]:
     Aliases[alias] = Aliases[alias] + [cmd] if (alias in Aliases) else [cmd]
 
