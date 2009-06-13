@@ -8,7 +8,7 @@ import db.dump
 from db import MigrationFailedError
 from optparse import OptionParser
 
-def run (args = []):
+def run (args = None):
   """Updates database to given revision"""
   cmds.init.require_init()
   (options, args) = optargs (args)
@@ -18,6 +18,13 @@ def run (args = []):
     revision = repo.migration.latest_number()
 
   current = repo.revision.current()
+
+  if options.dry_run:
+    repo.revision.set_current(revision)
+    print """Revision set to #%s""" % revision
+    return
+
+
   if current == revision and not options.abandon_current:
     print """Nothing to update."""
     return
@@ -64,7 +71,9 @@ def run (args = []):
 def optargs(args):
   """Parses options for current command."""
   parser = OptionParser()
-  parser.add_option("", "--abandon", dest="abandon_current", default=False, action="store_true",
+  parser.add_option("-a", "--abandon", dest="abandon_current", default=False, action="store_true",
                   help="Abandon outstanding changes when updating to migration")
+  parser.add_option("-d", "--dry", dest="dry_run", default=False, action="store_true",
+                  help="Just update the revision number, don't perform updates")
   (options, args) = parser.parse_args(args)
   return (options, args)
