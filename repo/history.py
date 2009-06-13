@@ -19,19 +19,25 @@ def refresh():
 
 class History:
   def __init__ (self):
+    self.History = { }
     try:
       self.History = cPickle.load(open(HISTORY_PATH))
+      current_history = self.History
+      self.get_fresh_from_migrations()
+      if current_history != self.History:
+        self.save()
     except:
-      self.get_fresh_from_migrations().save()
-      self.History = cPickle.load(open(HISTORY_PATH))
+      pass
       
   def save (self):
     cPickle.dump (self.History, open(HISTORY_PATH, 'w'))
     
-  def get_fresh_from_migrations (self):
-    self.History = { }
+  def get_fresh_from_migrations (self, force_refresh = False):
     for migration_number in repo.migration.all():
+      if not force_refresh and self.History.has_key (migration_number):
+        continue
       self.History[migration_number] = repo.migration.Migration (migration_number)
+      del (self.History[migration_number].state_to_rollback)
     return self
   
   def __str__ (self):
