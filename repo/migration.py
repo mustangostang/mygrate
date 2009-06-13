@@ -38,6 +38,8 @@ def latest_number():
   MIGRATION_DIR = os.path.join (repo.repopath(), MIGRATION_DIR)
 
   migration_numbers = [int(file[0:3]) for file in os.listdir (MIGRATION_DIR)]
+  if not len (migration_numbers):
+    return 0
   return max (migration_numbers)
   
 def current_user():
