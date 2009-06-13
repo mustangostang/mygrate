@@ -44,15 +44,22 @@ class History:
     return self.out ()
   
   def tip (self):
-    return self.out (min = max(self.History.keys()))
+    return self.out (revision_from = max(self.History.keys()))
   
-  def out(self, max = None, min = 0):
+  def out(self, revision_to = None, revision_from = 0, reversing = False):
     Out = []
-    for k in reversed(sorted(self.History.keys())):
-      if k < min: continue
-      if max and k > max: continue
+    iterlist = sorted(self.History.keys())
+    if revision_to is None:
+      revision_to = max(self.History.keys())
+    if revision_to < revision_from:
+      (revision_to, revision_from) = (revision_from, revision_to)
+      reversing = not reversing
+    iterlist = [v for (k, v) in enumerate(iterlist) if v >= revision_from and v <= revision_to]
+    if reversing:
+      iterlist = reversed (iterlist)
+    for k in iterlist:
       Migration = self.History[k]
-      Out.append("""changeset:   %s\nuser:        %s\ndate:        %s\nsummary:     %s""" % (k, Migration.author, Migration.date, Migration.message))
+      Out.append("""changeset:   %s\nuser:        %s\ndate:        %s\nsummary:     %s""" % (Migration.number, Migration.author, Migration.date, Migration.message))
     return "\n\n".join (Out) + "\n"
 
   
