@@ -1,3 +1,4 @@
+import os.path
 #!/usr/bin/env python
 
 import cmds.init
@@ -7,6 +8,7 @@ import os
 import repo
 from db import SQLLoadError, MigrationFailedError
 from subprocess import Popen, PIPE
+import datetime
 
 def add(number, sqlUp, sqlDown, message):
   """Adds a new migration."""
@@ -23,6 +25,7 @@ def add(number, sqlUp, sqlDown, message):
   revision["up"] = sqlUp
   revision["down"] = sqlDown
   revision["author"] = current_user()
+  revision["date"] = str(datetime.datetime.today())
   revision.write()
   
 def all():
@@ -56,13 +59,14 @@ class Migration:
     self.sqlDown = ''
     self.filename = ''
     self.author = ''
+    self.date = ''
     self.state_to_rollback = db.dump.restore_point()
     
     numberWithZeros = str(number).zfill(3)
     filename = [file for file in os.listdir (MIGRATION_DIR) if file.startswith(numberWithZeros)][0]
-    self.__fromFile (MIGRATION_DIR + os.sep + filename)
+    self.__from_file (MIGRATION_DIR + os.sep + filename)
           
-  def __fromFile (self, file):
+  def __from_file (self, file):
     def update (config):
       config.write()
       
@@ -72,11 +76,16 @@ class Migration:
     self.sqlUp = config["up"]
     self.sqlDown = config["down"]
     self.filename = file
+    if "date" in config:
+      self.date = config["date"]
+    else:
+      config["date"] = self.date = str(datetime.datetime.fromtimestamp (os.path.getctime(file)))
+      update (config)
+
     if "author" in config:
       self.author = config["author"]
     else:
-      self.author = current_user()
-      config["author"] = self.author
+      config["author"] = self.author = current_user()
       update (config)
     
   def up (self):

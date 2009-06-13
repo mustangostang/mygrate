@@ -11,6 +11,7 @@ def run (args):
   """Show tip change of a repository."""
   cmds.init.require_init()
   (options, args) = optargs (args)
+  repo.history.refresh()
   History = repo.history.load()
   print History.tip()
 
