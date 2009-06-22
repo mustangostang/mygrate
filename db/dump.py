@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import os
 import datetime
 import cmds.init
-
+from db import SQLLoadError
 
 
 
@@ -14,7 +14,8 @@ def restore_point():
   password = config["db_pass"]
   db       = config["db_db"]
 
-  return mysql_command ("-u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+  output, errors = mysql_command ("-u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+  return output
 
 def dump():
   config = cmds.init.config()
@@ -35,16 +36,23 @@ def load (sql):
   f.write (sql)
   f.close()
   
-  output = mysql_command ("-u%s %s%s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, db, tempfile))
+  (output, errors) = mysql_command ("-u%s %s%s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, db, tempfile))
   os.unlink(tempfile)
-  return output
+  if errors:
+    raise SQLLoadError (sql = sql, errors = errors)
+  return True
   
 def mysql_command (cmd):
   config = cmds.init.config()
   mysql_path = config["mysql"] if "mysql" in config else "mysql"
-  return Popen("%s %s" % (mysql_path, cmd), shell=True, stdout=PIPE).stdout.read()
+  process = Popen("%s %s" % (mysql_path, cmd), shell=True, stdout=PIPE, stderr=PIPE)
+  out = process.stdout.read()
+  err = process.stderr.read()
+  return (out, err)
   
 def mysqldump_command (cmd):
   config = cmds.init.config()
   mysqldump_path = config["mysqldump"] if "mysqldump" in config else "mysqldump"
-  return Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE).stdout.read() 
+  process = Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE)
+  out = process.stdout.read()
+  return out
