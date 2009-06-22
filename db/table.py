@@ -1,3 +1,4 @@
+import string
 #!/usr/bin/env python
 import re
 import alter
@@ -22,30 +23,31 @@ class Database:
       return True
     return False
 
-  def parseFile (self, files):
+  def parseFile (self, file):
     try:
-      Lines = open (file, 'r').readlines()
+      string = open (file, 'r').read()
     except IOError:
       print "Can't open file %s." % file
       sys.exit()
-    return self.parseLines (Lines)
+    return self.parseString (string)
 
   def parseString (self, string):
     """Parses a file and returns an instance of Database."""
+    string = string.replace("\r\n", "\n");
     return self.parseLines(string.splitlines(True))
 
   def parseLines (self, Lines):
-    Lines = [line for line in Lines if not line.startswith("SET ")]
+    Lines = [line for line in Lines if not line.startswith("SET ") and not line.startswith ("--") and not line == "\n"]
     TableData = []
     table = []
     for line in Lines:
       table.append (line)
+      # @type line str
       if line.endswith(";\n"):
         TableData.append (table)
         table = []
     Tables = [Table(table) for table in TableData]
     self.tables = Tables
-
     self.__tableNames = [table.name for table in self.tables]
     return self
 
@@ -62,7 +64,7 @@ class Database:
     return self
 
   def __str__ (self):
-    return "\n\n".join ([str(table) for table in self.tables])
+    return "\n\n".join ([str(table) for table in self.tables if str(table)])
 
 
 class Table:
