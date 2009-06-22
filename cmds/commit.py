@@ -47,11 +47,11 @@ def auto_commit_message():
   Diff = Database().parseString(db.dump.dump()) - Database().parseString(repo.revision.latest())
   CommitMsg = []
   for tbl in Diff.TablesAdded:
-    CommitMsg.append ("Added table `%s`" % tbl.name)
+    CommitMsg.append ("Added `%s`" % tbl.name)
   for tbl in Diff.TablesDropped:
-    CommitMsg.append ("Dropped table `%s`" % tbl.name)
+    CommitMsg.append ("Dropped `%s`" % tbl.name)
   for (tbl, dstTable) in Diff.TablesModified:
-    CommitMsg.append ("Modified table `%s`:" % tbl.name)
+    CommitMsg.append ("Modified `%s`:" % tbl.name)
     diffSt = dstTable - tbl
     for (field, prev) in diffSt.FieldsAdded:
       CommitMsg.append ("  + added `%s`" % field.name)
