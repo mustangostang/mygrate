@@ -12,38 +12,54 @@ HISTORY_PATH = ".mygrate/store/history"
 HISTORY_PATH = os.path.join (repo.repopath(), HISTORY_PATH)
 
 def load():
-  return History()  
+  return History()
+
+def refresh():
+  History().get_fresh_from_migrations().save()
 
 class History:
   def __init__ (self):
+    self.History = { }
     try:
       self.History = cPickle.load(open(HISTORY_PATH))
-    except:
+      current_history = self.History
       self.get_fresh_from_migrations()
-      self.save()
-      self.History = cPickle.load(open(HISTORY_PATH))
+      if current_history != self.History:
+        self.save()
+    except:
+      pass
       
   def save (self):
     cPickle.dump (self.History, open(HISTORY_PATH, 'w'))
     
-  def get_fresh_from_migrations (self):
-    self.History = { }
+  def get_fresh_from_migrations (self, force_refresh = False):
     for migration_number in repo.migration.all():
+      if not force_refresh and self.History.has_key (migration_number):
+        continue
       self.History[migration_number] = repo.migration.Migration (migration_number)
+      del (self.History[migration_number].state_to_rollback)
+    return self
   
   def __str__ (self):
     return self.out ()
   
   def tip (self):
-    return self.out (min = max(self.History.keys()))
+    return self.out (revision_from = max(self.History.keys()))
   
-  def out(self, max = None, min = 0):
+  def out(self, revision_to = None, revision_from = 0, reversing = False):
     Out = []
-    for k in reversed(sorted(self.History.keys())):
-      if k < min: continue
-      if max and k > max: continue
+    iterlist = sorted(self.History.keys())
+    if revision_to is None:
+      revision_to = max(self.History.keys())
+    if revision_to < revision_from:
+      (revision_to, revision_from) = (revision_from, revision_to)
+      reversing = not reversing
+    iterlist = [v for (k, v) in enumerate(iterlist) if v >= revision_from and v <= revision_to]
+    if reversing:
+      iterlist = reversed (iterlist)
+    for k in iterlist:
       Migration = self.History[k]
-      Out.append("""changeset:   %s\nuser:        %s\nsummary:     %s""" % (k, Migration.author, Migration.message))
+      Out.append("""changeset:   %s\nuser:        %s\ndate:        %s\nsummary:     %s""" % (Migration.number, Migration.author, Migration.date, Migration.message))
     return "\n\n".join (Out) + "\n"
 
   
