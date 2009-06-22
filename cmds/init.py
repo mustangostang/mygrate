@@ -4,6 +4,7 @@ import os
 import os.path
 import sys
 from repo.configobj import ConfigObj
+import repo
 
 PATH_CONF_MAIN = ".mygrate/main.conf"
 PATH_REV_MAIN  = ".mygrate/revisions"
@@ -19,7 +20,7 @@ def is_initialized():
   return False
 
 def config():
-  path = PATH_CONF_MAIN
+  path = os.path.join (repo.repopath(), PATH_CONF_MAIN)
   try:
     config = ConfigObj(path)
     return config
@@ -28,7 +29,8 @@ def config():
   return False
   
 def revisions():
-  path = PATH_REV_MAIN
+  path = os.path.join (repo.repopath(), PATH_REV_MAIN)
+
   try:
     config = ConfigObj(path)
     return config

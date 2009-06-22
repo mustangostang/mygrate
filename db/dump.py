@@ -41,15 +41,10 @@ def load (sql):
   
 def mysql_command (cmd):
   config = cmds.init.config()
-  mysql_path = config["mysql"] if config["mysql"] else "mysql"
+  mysql_path = config["mysql"] if "mysql" in config else "mysql"
   return Popen("%s %s" % (mysql_path, cmd), shell=True, stdout=PIPE).stdout.read()
   
 def mysqldump_command (cmd):
   config = cmds.init.config()
-  mysqldump_path = config["mysqldump"] if config["mysqldump"] else "mysql"
-  return Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE).stdout.read()
-
-if __name__ == "__main__":
-  open ("../temp.sql", "w").write (dump())
-
- 
+  mysqldump_path = config["mysqldump"] if "mysqldump" in config else "mysqldump"
+  return Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE).stdout.read() 

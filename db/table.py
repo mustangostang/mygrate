@@ -145,7 +145,7 @@ class Table:
             self.primaryIndex,
             "," if len(self.Indexes) else "",
             ",\n  ".join(["%s" % str(i) for i in self.Indexes]),
-            " ".join(["%s=%s" % (k, self.Options[k]) for k in self.Options.keys()])
+            " ".join(["%s=%s" % (k, self.Options[k]) for k in self.Options.keys() if k != "AUTO_INCREMENT"])
             )
 
   def removeSQL (self):

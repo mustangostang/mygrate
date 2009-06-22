@@ -4,11 +4,13 @@ import cmds.init
 from repo.configobj import ConfigObj
 import db.dump
 import os
+import repo
 
 def add(number, sqlUp, sqlDown, message):
   """Adds a new migration."""
   config = cmds.init.config()
   MIGRATION_DIR = config["migrations_dir"]
+  MIGRATION_DIR = os.path.join (repo.repopath(), MIGRATION_DIR)
   PATH = MIGRATION_DIR + "/%s-%s.conf"
 
   numberWithZeros = str(number).zfill(3)
@@ -28,6 +30,7 @@ def latest_number():
   """Returns greates migration number available."""
   config = cmds.init.config()
   MIGRATION_DIR = config["migrations_dir"]
+  MIGRATION_DIR = os.path.join (repo.repopath(), MIGRATION_DIR)
 
   migration_numbers = [int(file[0:3]) for file in os.listdir (MIGRATION_DIR)]
   return max (migration_numbers)
@@ -43,6 +46,7 @@ class Migration:
   def __init__ (self, number):
     config = cmds.init.config()
     MIGRATION_DIR = config["migrations_dir"]
+    MIGRATION_DIR = os.path.join (repo.repopath(), MIGRATION_DIR)
 
     self.number = ''
     self.message = ''
