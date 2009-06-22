@@ -40,5 +40,6 @@ def run (args):
       Migration = repo.migration.Migration (current)
       print """Upgrading migration #%s: %s.""" % (current, Migration.message)
       Migration.up()
+      repo.revision.save_to_file(current)
       repo.revision.set_current (current)
     print """Updated to revision #%s.""" % current
