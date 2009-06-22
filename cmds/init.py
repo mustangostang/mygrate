@@ -4,7 +4,6 @@ import os
 import os.path
 import sys
 from repo.configobj import ConfigObj
-import repo
 
 PATH_CONF_MAIN = ".mygrate/main.conf"
 PATH_REV_MAIN  = ".mygrate/revisions"
@@ -20,7 +19,7 @@ def is_initialized():
   return False
 
 def config():
-  path = os.path.join (repo.repopath(), PATH_CONF_MAIN)
+  path = PATH_CONF_MAIN
   try:
     config = ConfigObj(path)
     return config
@@ -29,8 +28,7 @@ def config():
   return False
   
 def revisions():
-  path = os.path.join (repo.repopath(), PATH_REV_MAIN)
-
+  path = PATH_REV_MAIN
   try:
     config = ConfigObj(path)
     return config
@@ -47,11 +45,8 @@ def run (args):
     os.makedirs (".mygrate/store")
   except:
     pass
-  migration_dir_exists = False
   dir_default = "migrations"
   dir = dir_default
-  if os.path.isdir(dir):
-    migration_dir_exists = True
   if not os.path.isdir (dir_default):
     dir = raw_input ("The directory to store the migration files (default: %s): " % dir_default)
     if not dir:
@@ -85,7 +80,3 @@ def run (args):
   revisions.write()
   
   print """Migration repos initialized successfully."""
-
-  if migration_dir_exists:
-    import cmds.update
-    cmds.update.run()

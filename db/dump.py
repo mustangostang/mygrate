@@ -4,7 +4,7 @@ from subprocess import Popen, PIPE
 import os
 import datetime
 import cmds.init
-from db import SQLLoadError
+
 
 
 
@@ -13,13 +13,15 @@ def restore_point():
   user     = config["db_user"]
   password = config["db_pass"]
   db       = config["db_db"]
-  return mysqldump_command ("-u%s %s%s --add-drop-table --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+
+  return mysql_command ("-u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
 
 def dump():
   config = cmds.init.config()
   user     = config["db_user"]
   password = config["db_pass"]
   db       = config["db_db"]
+
   return mysqldump_command ("--no-data --compact -u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
 
 def load (sql):
@@ -33,23 +35,21 @@ def load (sql):
   f.write (sql)
   f.close()
   
-  (output, errors) = mysql_command ("-u%s %s%s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, db, tempfile))
+  output = mysql_command ("-u%s %s%s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, db, tempfile))
   os.unlink(tempfile)
-  if errors:
-    raise SQLLoadError (sql = sql, errors = errors)
-  return True
+  return output
   
 def mysql_command (cmd):
   config = cmds.init.config()
-  mysql_path = config["mysql"] if "mysql" in config else "mysql"
-  process = Popen("%s %s" % (mysql_path, cmd), shell=True, stdout=PIPE, stderr=PIPE)
-  out = process.stdout.read()
-  err = process.stderr.read()
-  return (out, err)
+  mysql_path = config["mysql"] if config["mysql"] else "mysql"
+  return Popen("%s %s" % (mysql_path, cmd), shell=True, stdout=PIPE).stdout.read()
   
 def mysqldump_command (cmd):
   config = cmds.init.config()
-  mysqldump_path = config["mysqldump"] if "mysqldump" in config else "mysqldump"
-  process = Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE)
-  out = process.stdout.read()
-  return out
+  mysqldump_path = config["mysqldump"] if config["mysqldump"] else "mysql"
+  return Popen("%s %s" % (mysqldump_path, cmd), shell=True, stdout=PIPE).stdout.read()
+
+if __name__ == "__main__":
+  open ("../temp.sql", "w").write (dump())
+
+ 

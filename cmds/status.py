@@ -3,7 +3,6 @@
 import db.dump
 from db.table import Database
 import repo.revision
-import repo
 import cmds.init
 import sys
 from optparse import OptionParser
@@ -15,8 +14,6 @@ def run (args):
   (options, args) = optargs (args)
 
   revision = repo.revision.latest_number() if not options.revision else int(options.revision)
-
-  repo.allow_if_at_tip(die = False)
 
   src = Database().parseString(repo.revision.by_number(revision))
   dest = Database().parseString(db.dump.dump())
