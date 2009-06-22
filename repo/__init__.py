@@ -7,6 +7,8 @@ from repo.configobj import ConfigObj
 REPO = None
 
 def repopath():
+  """Determines path to actual repository by scanning upper level directories.
+  After being run once, stores repo info in REPO."""
   global REPO
   if REPO is not None:
     return REPO
@@ -16,7 +18,6 @@ def repopath():
       repopath = os.path.join (curdir, cmds.init.PATH_CONF_MAIN)
       config = ConfigObj(repopath)
       if config:
-        print "Repository found at %s" % curdir
         REPO = curdir
         return curdir
     except IOError:
