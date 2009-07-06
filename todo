@@ -1,8 +1,6 @@
 Todo:
 
 [ ] Merge behaviour (specs?)
-[ ] Block updates if there are uncommited changes (proceed with care, requires
-    extensive testing).
 
 > [ ] Separate logic of revisions/migrations (we should store migrations so one
       can do some changes to them by hand. Revisions are for inner integrity checks.
@@ -15,8 +13,6 @@ Todo:
 * [ ] Ignore command: ignore some tables.
     Syntax: ignore [-r] table
 
-[reopened] Implement tip command (displays info for current revision)
-[reopened] Implement log command (displays detailed revision info)
 [reopened] We should save history of current branch, in order to track actual 
     migration files. 
 [ ] Commits should open another point in revision history, yes!
@@ -28,4 +24,7 @@ Done:
 [x] Closer integration with Mercurial. Option to select VCS on init.
     Auto add .conf files on commit.
 [x] Implement status command (A, R, M, M+, M-)
-
+[x] Implement tip command (displays info for current revision)
+[x] Implement log command (displays detailed revision info)
+[x] Block updates if there are uncommited changes (proceed with care, requires
+    extensive testing).

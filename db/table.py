@@ -37,7 +37,9 @@ class Database:
     return self.parseLines(string.splitlines(True))
 
   def parseLines (self, Lines):
-    Lines = [line for line in Lines if not line.startswith("SET ") and not line.startswith ("--") and not line == "\n"]
+    Lines = [line for line in Lines if not line.startswith("SET ")
+             and not line.startswith ("--") and not line.startswith ('/*')
+             and not line == "\n"]
     TableData = []
     table = []
     for line in Lines:
