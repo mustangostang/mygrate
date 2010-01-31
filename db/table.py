@@ -179,10 +179,10 @@ class Field:
     if m is not None:
       self.default = "'%s'" % m.group(1)
     else:
-      m = re.search ("default ([^\s,]+)", data);
+      m = re.search ("(?:default|DEFAULT) ('.+?'|[^\s,]+)", data);
       if m is not None:
-       self.default = "%s" % m.group(1)
-    m = re.search ("auto_increment", data);
+        self.default = "%s" % m.group(1)
+    m = re.search ("auto_increment|AUTO_INCREMENT", data);
     if m:
       self.auto_increment = True
 
