@@ -13,27 +13,30 @@ def restore_point():
   user     = config["db_user"]
   password = config["db_pass"]
   db       = config["db_db"]
-  return mysqldump_command ("-u%s %s%s --add-drop-table --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+  host     = config["db_host"]
+  return mysqldump_command ("-u%s %s%s %s --add-drop-table --default-character-set=utf8 %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db))
 
 def dump():
   config = cmds.init.config()
   user     = config["db_user"]
   password = config["db_pass"]
   db       = config["db_db"]
-  return mysqldump_command ("--no-data --compact -u%s %s%s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, db))
+  host     = config["db_host"]
+  return mysqldump_command ("--no-data --add-lock=false --compact -u%s %s%s %s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db))
 
 def load (sql):
   config = cmds.init.config()
   user     = config["db_user"]
   password = config["db_pass"]
   db       = config["db_db"]
+  host     = config["db_host"]
 
   tempfile = ".temp-mygrate-%s" % str(datetime.time()).replace (':', '_')
   f = open (tempfile, 'w')
   f.write (sql)
   f.close()
   
-  (output, errors) = mysql_command ("-u%s %s%s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, db, tempfile))
+  (output, errors) = mysql_command ("-u%s %s%s %s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db, tempfile))
   os.unlink(tempfile)
   if errors:
     raise SQLLoadError (sql = sql, errors = errors)
