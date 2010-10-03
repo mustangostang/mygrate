@@ -82,10 +82,7 @@ def run (args):
   db_pass = raw_input ("The password for %s@%s: " % (db_user, db_host))  
   db_db = raw_input ("The MySQL database name at %s: " % db_host)
   vcs   = raw_input ("Version control system you are using (svn/hg/git/?): ")
-  
-  mysql = "mysql"
-  mysqldump = "mysqldump"
-  
+    
   config = ConfigObj(PATH_CONF_MAIN)
   config["migrations_dir"] = dir
   config["db_host"]        = db_host
@@ -93,8 +90,8 @@ def run (args):
   config["db_pass"]        = db_pass
   config["db_db"]          = db_db
   config["vcs"]            = vcs
-  config["mysql"]          = mysql
-  config["mysqldump"]      = mysqldump
+  config["mysql"]          = path_to_mysql
+  config["mysqldump"]      = path_to_mysqldump
   config.write()
   
   revisions = ConfigObj (PATH_REV_MAIN)
