@@ -5,6 +5,7 @@ import os.path
 import sys
 from repo.configobj import ConfigObj
 import repo
+import utils
 
 PATH_CONF_MAIN = ".mygrate/main.conf"
 PATH_REV_MAIN  = ".mygrate/revisions"
@@ -38,8 +39,24 @@ def revisions():
     return False
   return False
 
+def search_for_executables():
+	"""Find executables for mysql and mysqldump."""
+	dir_name = ''
+	if os.path.exists ('/usr/bin/which'):
+		dir_name = os.path.dirname(utils.shell ('which mysql')) + '/'
+	if os.path.exists ('/Applications/MAMP/Library/bin/mysql'):
+		dir_name = '/Applications/MAMP/Library/bin/'
+		
+	if not dir_name:
+		print """Mygrate was unable to locate the binaries for mysql and mysqldump. They are needed for Mygrate to work. Please enter the paths to binaries manually.
+		
+		If you are on Windows, binaries are included in the mygrate distribution."""
+		
+	return ('%smysql' % dir_name, '%smysqldump' % dir_name)
+
 def run (args):
   """Initializes a mygrate repository"""
+  (path_to_mysql, path_to_mysqldump) = search_for_executables()
   if is_initialized():
     print """abort: Mygrate repository is already initialized in this directory"""
     sys.exit()
