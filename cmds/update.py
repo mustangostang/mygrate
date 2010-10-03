@@ -14,7 +14,7 @@ def run (args = None):
   (options, args) = optargs (args)
   try:
     revision = int(args[0])
-  except IndexError:
+  except (IndexError, ValueError):
     revision = repo.migration.latest_number()
 
   current = repo.revision.current()

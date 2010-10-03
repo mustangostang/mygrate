@@ -31,7 +31,9 @@ if __name__ == '__main__':
       module = "cmds.%s" % command
       __import__ (module)
       sys.modules[module].run(args)
-  except IndexError:
+    else:
+      IndexError('Command not found')
+  except (IndexError, KeyError):
     if command:
       print """Unknown command: %s""" % command
     print """Mygrate - MySQL Sexy Migration Tool\n"""
