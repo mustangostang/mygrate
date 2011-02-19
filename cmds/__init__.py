@@ -1,3 +1,4 @@
 #!/usr/bin/env python
 
-__all__ = ["clean", "commit", "diff", "import", "init", "log", "revert", "status", "test", "tip", "update", "rollback"]
+__all__ = ["clean", "commit", "diff", "export", "import", "init", "log", "revert", "status", 
+"test", "tip", "update", "rollback"]
