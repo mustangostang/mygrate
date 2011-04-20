@@ -9,7 +9,7 @@ import repo.migration
 import cmds.init
 
 def run (args):
-  """Commits current repository changes to file"""
+  """Commits current repository changes."""
   cmds.init.require_init()
   repo.allow_if_at_tip()
   try:

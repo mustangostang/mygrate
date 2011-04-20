@@ -5,7 +5,7 @@ import repo
 import utils
 
 def run (args):
-  """Removes all Mygrate data (cancels mygrate init)"""
+  """Removes all Mygrate data (cancels mygrate init)."""
   cmds.init.require_init()
   path = repo.repopath() + '/.mygrate'
   print "Removing everything under %s." % path

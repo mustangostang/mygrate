@@ -7,7 +7,7 @@ import repo.revision
 import cmds.init
 
 def run (args):
-  """Test current repository changes"""
+  """Test current repository changes."""
   cmds.init.require_init()
   print "Testing current changes."
   src = Database().parseString(repo.revision.latest())

@@ -8,7 +8,7 @@ from optparse import OptionParser
 
 
 def run (args):
-  """Compares current repository state to latest commited revision"""
+  """Compares current repository state to a revision."""
   cmds.init.require_init()
   
   (options, args) = optargs (args)

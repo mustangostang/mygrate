@@ -8,7 +8,7 @@ from db.table import Database
 import db.dump
 
 def run (args):
-  """Exports data"""
+  """Exports table data to a given format."""
   cmds.init.require_init()
   (options, args) = optargs (args)
   current = Database().parseString(db.dump.dump())
@@ -36,6 +36,21 @@ class %s extends ZFast_Model_goDB {
   } """ % (Table.name, ", ".join (["$%s" % f for f in fields]), Table.name, 
     "\n".join(["      $this->addField ('%s');" % f for f in fields[1:]])
   )
+  
+  RealFields = fields[1:]
+  ModelFields = [f for f in RealFields if f.endswith ('_id')]
+  
+  
+  print """   /* Static functions */
+
+  public static function __create (User $User) {
+      $I = new self();
+      $I->user_id = $User->id;
+      $I->date = date ('Y-m-d H:i:s');
+      $I->save();
+      return $I;
+  }"""
+  
   print """
   /**
    * @param int $id

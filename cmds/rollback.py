@@ -6,7 +6,7 @@ import sys
 import repo.migration
 
 def run (args):
-  """Rolls back last commit"""
+  """Rolls back last commit."""
   cmds.init.require_init()
   if not repo.revision.latest():
     print "There are no commits yet."

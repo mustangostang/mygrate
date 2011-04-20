@@ -8,7 +8,7 @@ import sys
 from optparse import OptionParser
 
 def run (args):
-  """Reverts repository to its last commited state"""
+  """Reverts repository to its last commited state."""
   cmds.init.require_init()
   (options, args) = optargs (args)
   if not len(args):

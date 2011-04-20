@@ -13,6 +13,19 @@ for cmd in cmds.__all__:
 Aliases['ci'] = ["commit"]
 Aliases['co'] = ["update"]
 
+def about_mygrate():
+    print """Mygrate - MySQL Sexy Migration Tool\n"""
+    print """Available commands are:\n"""
+    
+    for cmd in sorted(cmds.__all__):
+      if cmd in ['checkout']: continue
+      module = "cmds.%s" % cmd
+      __import__ (module)
+      print " %s %s" % (cmd.ljust(10, ' '), sys.modules[module].run.__doc__)
+
+    print
+    sys.exit()
+
 if __name__ == '__main__':
   # print os.getcwd()
   command = ""
@@ -32,18 +45,9 @@ if __name__ == '__main__':
       __import__ (module)
       sys.modules[module].run(args)
     else:
-      IndexError('Command not found')
+      if command == 'help':
+          about_mygrate()
+      print "Unknown command: '%s'. For the list of available commands run 'mygrate help''" % command
+      ValueError('Command not found')
   except (IndexError, KeyError):
-    if command:
-      print """Unknown command: %s""" % command
-    print """Mygrate - MySQL Sexy Migration Tool\n"""
-    print """Available commands are:\n"""
-    
-    for cmd in sorted(cmds.__all__):
-      if cmd in ['checkout']: continue
-      module = "cmds.%s" % cmd
-      __import__ (module)
-      print " %s %s" % (cmd.ljust(10, ' '), sys.modules[module].run.__doc__)
-
-    print
-    sys.exit()
+      about_mygrate()

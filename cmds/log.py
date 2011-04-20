@@ -5,7 +5,7 @@ import cmds.init
 from optparse import OptionParser
 
 def run (args):
-  """Show all changes of repository."""
+  """Show all changes inside a repository."""
   cmds.init.require_init()
   (options, args) = optargs (args)
   History = repo.history.load()

@@ -5,7 +5,7 @@ import cmds.init
 import db
 
 def run (args):
-  """Imports SQL file to the database"""
+  """Imports a SQL file to the database."""
   cmds.init.require_init()
   if not len(args):
     print "Specify an SQL file to run."

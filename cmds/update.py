@@ -9,7 +9,7 @@ from db import MigrationFailedError
 from optparse import OptionParser
 
 def run (args = None):
-  """Updates database to given revision"""
+  """Updates database to a given revision."""
   cmds.init.require_init()
   (options, args) = optargs (args)
   try:

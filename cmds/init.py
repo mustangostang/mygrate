@@ -55,7 +55,7 @@ def search_for_executables():
 	return ('%smysql' % dir_name, '%smysqldump' % dir_name)
 
 def run (args):
-  """Initializes a mygrate repository"""
+  """Initializes a Mygrate repository."""
   (path_to_mysql, path_to_mysqldump) = search_for_executables()
   if is_initialized():
     print """abort: Mygrate repository is already initialized in this directory"""
