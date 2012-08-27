@@ -6,37 +6,33 @@ import datetime
 import cmds.init
 from db import SQLLoadError
 
+def prop_or_null(key, prefix = '', default_null = ''):
+  config = cmds.init.config()
+  c = config.get(key, False)
+  if not c or c == default_null: return ""
+  return prefix + c
 
+def connect_credentials():
+  config = cmds.init.config()
+  user     = config["db_user"]
+  return "-u%s %s %s %s %s" % (user, prop_or_null('db_pass', "-p"), prop_or_null('db_host', "-h", 'localhost'), prop_or_null('port', "--port="), prop_or_null('socket', "--socket="))
 
 def restore_point():
   config = cmds.init.config()
-  user     = config["db_user"]
-  password = config["db_pass"]
-  db       = config["db_db"]
-  host     = config["db_host"]
-  return mysqldump_command ("-u%s %s%s %s --add-drop-table --default-character-set=utf8 %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db))
+  return mysqldump_command ("%s --add-drop-table --default-character-set=utf8 %s" % (connect_credentials(), config["db_db"]))
 
 def dump():
   config = cmds.init.config()
-  user     = config["db_user"]
-  password = config["db_pass"]
-  db       = config["db_db"]
-  host     = config["db_host"]
-  return mysqldump_command ("--no-data --add-lock=false --compact -u%s %s%s %s --default-character-set=utf8 %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db))
+  return mysqldump_command ("--no-data --add-lock=false --compact %s --default-character-set=utf8 %s" % (connect_credentials(), config["db_db"]))
 
 def load (sql):
   config = cmds.init.config()
-  user     = config["db_user"]
-  password = config["db_pass"]
-  db       = config["db_db"]
-  host     = config["db_host"]
-
   tempfile = ".temp-mygrate-%s" % str(datetime.time()).replace (':', '_')
   f = open (tempfile, 'w')
   f.write (sql)
   f.close()
   
-  (output, errors) = mysql_command ("-u%s %s%s %s --default-character-set=utf8 %s < %s" % (user, "-p" if password else "", password, "-h"+host if host <> 'localhost' else "", db, tempfile))
+  (output, errors) = mysql_command ("%s --default-character-set=utf8 %s < %s" % (connect_credentials(), db, tempfile))
   os.unlink(tempfile)
   if errors:
     raise SQLLoadError (sql = sql, errors = errors)
