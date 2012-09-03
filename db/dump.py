@@ -32,7 +32,7 @@ def load (sql):
   f.write (sql)
   f.close()
   
-  (output, errors) = mysql_command ("%s --default-character-set=utf8 %s < %s" % (connect_credentials(), db, tempfile))
+  (output, errors) = mysql_command ("%s --default-character-set=utf8 %s < %s" % (connect_credentials(), config["db_db"], tempfile))
   os.unlink(tempfile)
   if errors:
     raise SQLLoadError (sql = sql, errors = errors)
