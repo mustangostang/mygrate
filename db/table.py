@@ -143,10 +143,10 @@ class Table:
   def createSQL (self):
     return """CREATE TABLE `%s` (
 %s
-  PRIMARY KEY (`%s`)%s
+  %s%s
   %s
 ) %s;""" % (self.name, "\n".join(["  %s," % str(f) for f in self.Fields]),
-            self.primaryIndex,
+            (("PRIMARY KEY (`%s`)" % self.primaryIndex) if self.primaryIndex else ""),
             "," if len(self.Indexes) else "",
             ",\n  ".join(["%s" % str(i) for i in self.Indexes]),
             " ".join(["%s=%s" % (k, self.Options[k]) for k in self.Options.keys() if k != "AUTO_INCREMENT"])
