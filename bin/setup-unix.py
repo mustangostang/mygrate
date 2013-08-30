@@ -23,7 +23,7 @@ def update_to_temp():
     os.makedirs(tempdir)
   except OSError:
     shutil.rmtree(tempdir, ignore_errors = True)
-  print "Updating mygrate from Google Code"
+  print "Updating mygrate from Github"
   subprocess.call(["git", "clone", "https://github.com/mustangostang/mygrate.git", tempdir])
 
 def create_bin():
