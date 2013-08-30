@@ -3,12 +3,12 @@ import shutil
 import sys
 import os
 
-tempdir = "/usr/share/python-support/mygrate"
+tempdir = "/usr/local/share/mygrate"
 
-def test_for_svn():
-  """Testing if SVN binary is available"""
+def test_for_git():
+  """Testing if Git binary is available"""
   try:
-    subprocess.Popen(["svn", "--version"], stdout=subprocess.PIPE).communicate()[0]
+    subprocess.Popen(["git", "--version"], stdout=subprocess.PIPE).communicate()[0]
     return True
   except OSError:
     return False
@@ -24,18 +24,18 @@ def update_to_temp():
   except OSError:
     shutil.rmtree(tempdir, ignore_errors = True)
   print "Updating mygrate from Google Code"
-  subprocess.call(["svn", "co", "http://mygrate.googlecode.com/svn/trunk/", tempdir])
+  subprocess.call(["git", "clone", "https://github.com/mustangostang/mygrate.git", tempdir])
 
 def create_bin():
   """Create executable file for mygrate"""
-  f = open ('/usr/bin/mygrate', 'w')
+  f = open ('/usr/local/bin/mygrate', 'w')
   f.writelines(['#! /bin/sh\n', 'python %s/mygrate.py "$@"' % tempdir])
   f.close()
-  os.chmod('/usr/bin/mygrate', 0755)
+  os.chmod('/usr/local/bin/mygrate', 0755)
 
 def main():
-  if not test_for_svn():
-    print ("Error: Subversion is not installed on your machine.")
+  if not test_for_git():
+    print ("Error: Git is not installed on your machine.")
     return
   update_to_temp()
   create_bin()
